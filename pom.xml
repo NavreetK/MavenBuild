@@ -1,0 +1,44 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Checkout') {
+            steps {
+                // This step checks out your source code from version control
+                script {
+                    checkout([$class: 'GitSCM', branches: [[name: '*/main']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/NavreetK/MavenBuild']]])
+                }
+            }
+        }
+
+        stage('Build') {
+            steps {
+                // This step uses Maven to build your project
+                script {
+                    sh 'mvn clean install'
+                }
+            }
+        }
+
+        stage('Test') {
+            steps {
+                // This step executes your tests
+                script {
+                    sh 'mvn test'
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            // This block of code will be executed if the pipeline succeeds
+            echo 'Build and tests passed!'
+        }
+
+        failure {
+            // This block of code will be executed if the pipeline fails
+            echo 'Build or tests failed!'
+        }
+    }
+}
