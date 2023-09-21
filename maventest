@@ -8,7 +8,7 @@ pipeline {
             steps {
                 script {
 // get Maven configured in Jenkins and assign to a vairable mvn
-                    def mvn = tool 'Maven'
+                    def mvn = tool 'Maven3'
 // run a shell command to perform a build
                     sh "${mvn}/bin/mvn clean install"
 
