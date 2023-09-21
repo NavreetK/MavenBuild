@@ -2,11 +2,17 @@ pipeline {
     agent any
 
     stages {
-        stage('Test Maven') {
+        stage('Maven Build') {
             steps {
                 script {
                     def mvnHome = tool 'Maven'
-                    sh "${mvnHome}/bin/mvn --version"
+                    sh "${mvnHome}/bin/mvn clean install"
+
+                    if (currentBuild.resultIsBetterOrEqualTo('SUCCESS')) {
+                        echo 'Maven build successful!'
+                    } else {
+                        error 'Maven build failed!'
+                    }
                 }
             }
         }
