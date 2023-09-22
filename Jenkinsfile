@@ -28,20 +28,10 @@ pipeline {
             }
         }
 
-        stage('Maven Build') {
+        stage("mvn build") {
             steps {
                 script {
-// get Maven configured in Jenkins and assign to a vairable mvn
-                    def mvn = tool 'Maven3'
-// run a shell command to perform a build
-                    sh "${mvn}/bin/mvn clean install"
-
-                    if (currentBuild.resultIsBetterOrEqualTo('SUCCESS')) {
-// echo prints a message
-                        echo 'Maven build successful!'
-                    } else {
-                        error 'Maven build failed!'
-                    }
+                    sh "mvn clean package"
                 }
             }
         }
