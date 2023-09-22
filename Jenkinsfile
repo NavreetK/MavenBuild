@@ -16,6 +16,7 @@ pipeline {
         NEXUS_REPOSITORY = "maven-repo"
         // Jenkins credential id to authenticate to Nexus OSS
         NEXUS_CREDENTIAL_ID = "nexus_ID"
+        
     }
 
     stages {
@@ -27,10 +28,20 @@ pipeline {
             }
         }
 
-        stage("mvn build") {
+        stage('Maven Build') {
             steps {
                 script {
-                    sh "Maven"
+// get Maven configured in Jenkins and assign to a vairable mvn
+                    def mvn = tool 'Maven3'
+// run a shell command to perform a build
+                    sh "${mvn}/bin/mvn clean install"
+
+                    if (currentBuild.resultIsBetterOrEqualTo('SUCCESS')) {
+// echo prints a message
+                        echo 'Maven build successful!'
+                    } else {
+                        error 'Maven build failed!'
+                    }
                 }
             }
         }
