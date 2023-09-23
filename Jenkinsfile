@@ -23,7 +23,7 @@ pipeline {
         stage("Check out") {
             steps {
                 script {
-                    git 'https://github.com/NavreetK/MavenBuild';
+                     git credentialsId: 'github', url: 'https://github.com/NavreetK/MavenBuild'
                 }
             }
         }
