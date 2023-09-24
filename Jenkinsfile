@@ -83,24 +83,17 @@ pipeline {
                 }
             }
         }
-        stage('Deploy to Tomcat') {
+       stage('Deploy to Tomcat') {
     steps {
-         script {
-                    def username = TOMCAT_CREDENTIALS.username
-                    def password = TOMCAT_CREDENTIALS.password
-                    
-                    def tomcatBin = "${TOMCAT_HOME}/bin" // Define the path to Tomcat's bin directory
+        script {
 
-                    sh(script: "${tomcatBin}/shutdown.sh")
-                    sh(script: "rm -rf ${TOMCAT_HOME}/webapps/${CONTEXT_PATH}*")
-                    sh(script: "cp ${WAR_FILE} ${TOMCAT_HOME}/webapps/${CONTEXT_PATH}.war")
-                    sh(script: "${tomcatBin}/startup.sh")
+            def warFilePath = sh(script: 'find . -name "*.war" | head -n 1', returnStdout: true).trim()
 
-                    // Deploying using Tomcat Manager API
-                    sh(script: "${tomcatBin}/curl -u ${username}:${password} ${TOMCAT_URL}/manager/text/undeploy?path=/${CONTEXT_PATH}")
-                    sh(script: "${tomcatBin}/curl -u ${username}:${password} ${TOMCAT_URL}/manager/text/deploy?path=/${CONTEXT_PATH}&war=file:${TOMCAT_HOME}/webapps/${CONTEXT_PATH}.war")
-                }
+            sh "curl -u ${TOMCAT_CREDENTIALS} --upload-file ${warFilePath} ${TOMCAT_URL}/manager/text/deploy?path=/your-app-path&update=true"
+            // Print out the value of warFilePath
+echo "WAR File Path: ${warFilePath}"
         }
-    }  
+    }
+}
     }
 }
