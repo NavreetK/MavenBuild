@@ -88,6 +88,7 @@ pipeline {
                     def nexusUrl = "http://15.222.102.23:8081/repository/maven-repo/com/nexus/MavenBuild/1.0-SNAPSHOT/MavenBuild-1.0-20230923.175609-1.war"
                     def response = sh(script: "curl -s ${nexusUrl}", returnStdout: true).trim()
                     def warFileName = sh(script: "echo ${response} | grep -oPm1 '(?<=<latest>)[^<]+'", returnStdout: true).trim()
+                    echo "warFileName: ${warFileName}"
                     def warUrl = "http://15.222.102.23:8081/repository/maven-repo/com/nexus/MavenBuild/1.0-SNAPSHOT/${warFileName}"
                     
                     sh(script: "curl -o Maven-Nexus-Build.war ${warUrl}")
@@ -100,12 +101,15 @@ pipeline {
         script {
             
            def tomcatHome = "/opt/tomcat/"
-                    def warFilePath = "Maven-Nexus-Build.war"  // Adjust the path if needed
+         def warFilePath = "/home/ec2-user/workspace/NexusBuild/Maven-Nexus-Build.war"
+
 
                     sh(script: "${tomcatHome}/bin/shutdown.sh")
                     sh(script: "rm -rf ${tomcatHome}/webapps/Maven-Nexus-Build*")
                     sh(script: "cp ${warFilePath} ${tomcatHome}/webapps/")
                     sh(script: "${tomcatHome}/bin/startup.sh")
+
+            echo "warFilePath: ${warFilePath}"
         }
     }
 }
