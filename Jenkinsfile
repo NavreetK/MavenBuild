@@ -88,7 +88,7 @@ pipeline {
                         sh "scp -v -o StrictHostKeyChecking=no **/*.war root@http://35.182.165.190:8080:/opt/tomcat/webapps/"
                     }
                 }
-        /**
+        /*
         stage('Download WAR File') {
             steps {
                 script {
@@ -119,7 +119,7 @@ pipeline {
             echo "warFilePath: ${warFilePath}"
         }
     }
-}//
+}*/
     
     }
 }
