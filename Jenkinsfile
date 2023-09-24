@@ -19,7 +19,7 @@ pipeline {
 
         TOMCAT_URL = 'http://35.182.165.190:8080'
         TOMCAT_CREDENTIALS = credentials('tomcat')
-        WAR_FILE = 'target/*.war'
+        WAR_FILE = 'target/1.0-SNAPSHOT/*.war'
        // CONTEXT_PATH = 'your-app-context-path' 
         // Optional, defaults to the name of the war file
         
