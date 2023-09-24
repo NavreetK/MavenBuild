@@ -85,7 +85,7 @@ pipeline {
         stage('Download WAR File') {
             steps {
                 script {
-                    def nexusUrl = "http://15.222.102.23:8081/repository/maven-repo/com/nexus/MavenBuild/1.0-SNAPSHOT/maven-metadata.xml"
+                    def nexusUrl = "http://15.222.102.23:8081/repository/maven-repo/com/nexus/MavenBuild/1.0-SNAPSHOT/MavenBuild-1.0-20230923.175609-1.war"
                     def response = sh(script: "curl -s ${nexusUrl}", returnStdout: true).trim()
                     def warFileName = sh(script: "echo ${response} | grep -oPm1 '(?<=<latest>)[^<]+'", returnStdout: true).trim()
                     def warUrl = "http://15.222.102.23:8081/repository/maven-repo/com/nexus/MavenBuild/1.0-SNAPSHOT/${warFileName}"
