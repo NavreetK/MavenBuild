@@ -18,7 +18,8 @@ pipeline {
         NEXUS_CREDENTIAL_ID = "nexus_ID"
 
         TOMCAT_URL = 'http://35.182.165.190:8080'
-        TOMCAT_CREDENTIALS = "tomcat"
+        TOMCAT_HOME = "/opt/tomcat/"
+        TOMCAT_CREDENTIALS = credentials('tomcat')
         WAR_FILE = 'http://15.222.102.23:8081/repository/maven-repo/com/nexus/MavenBuild/1.0-SNAPSHOT/MavenBuild-1.0-20230923.175609-1.war'
        CONTEXT_PATH = 'maven-repo' 
         // Optional, defaults to the name of the war file
@@ -84,23 +85,22 @@ pipeline {
         }
         stage('Deploy to Tomcat') {
     steps {
-        script {
-            def tomcatHome = "/opt/tomcat/"
+         script {
+                    def username = TOMCAT_CREDENTIALS.username
+                    def password = TOMCAT_CREDENTIALS.password
+                    
+                    def tomcatBin = "${TOMCAT_HOME}/bin" // Define the path to Tomcat's bin directory
 
-            withCredentials([usernamePassword(credentialsId: 'tomcat', passwordVariable: 'TOMCAT_PASSWORD', usernameVariable: 'TOMCAT_USERNAME')]) {
-                sh(script: "${tomcatHome}/bin/shutdown.sh")
-                sh(script: "rm -rf ${tomcatHome}/webapps/${CONTEXT_PATH}*")
-                sh(script: "cp ${WAR_FILE} ${tomcatHome}/webapps/${CONTEXT_PATH}.war")
-                sh(script: "${tomcatHome}/bin/startup.sh")
-                sh(script: "${tomcatHome}/bin/curl -u ${TOMCAT_USERNAME}:${TOMCAT_PASSWORD} http://15.222.102.23:8080/manager/text/undeploy?path=/${CONTEXT_PATH}")
-                sh(script: "${tomcatHome}/bin/curl -u ${TOMCAT_USERNAME}:${TOMCAT_PASSWORD} http://15.222.102.23:8080/manager/text/deploy?path=/${CONTEXT_PATH}&war=file:${tomcatHome}/webapps/${CONTEXT_PATH}.war")
-            }
+                    sh(script: "${tomcatBin}/shutdown.sh")
+                    sh(script: "rm -rf ${TOMCAT_HOME}/webapps/${CONTEXT_PATH}*")
+                    sh(script: "cp ${WAR_FILE} ${TOMCAT_HOME}/webapps/${CONTEXT_PATH}.war")
+                    sh(script: "${tomcatBin}/startup.sh")
+
+                    // Deploying using Tomcat Manager API
+                    sh(script: "${tomcatBin}/curl -u ${username}:${password} ${TOMCAT_URL}/manager/text/undeploy?path=/${CONTEXT_PATH}")
+                    sh(script: "${tomcatBin}/curl -u ${username}:${password} ${TOMCAT_URL}/manager/text/deploy?path=/${CONTEXT_PATH}&war=file:${TOMCAT_HOME}/webapps/${CONTEXT_PATH}.war")
+                }
         }
-    }
-}
-
-
-    
-    
+    }  
     }
 }
