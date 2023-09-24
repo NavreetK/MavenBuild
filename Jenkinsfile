@@ -82,6 +82,13 @@ pipeline {
                 }
             }
         }
+        stage ("Deploy to Staging"){
+                    steps {
+                        
+                        sh "scp -v -o StrictHostKeyChecking=no **/*.war root@http://35.182.165.190:8080:/opt/tomcat/webapps/"
+                    }
+                }
+        /**
         stage('Download WAR File') {
             steps {
                 script {
@@ -96,7 +103,7 @@ pipeline {
             }
         }
         
-        stage('Deploy to Tomcat') {
+      stage('Deploy to Tomcat') {
     steps {
         script {
             
@@ -112,7 +119,7 @@ pipeline {
             echo "warFilePath: ${warFilePath}"
         }
     }
-}
+}//
     
     }
 }
