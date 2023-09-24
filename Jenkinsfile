@@ -83,20 +83,15 @@ pipeline {
             }
         }
         stage('Deploy to Tomcat') {
-            steps {
-                script {
-                    def server = [
-                        url: TOMCAT_URL,
-                        credentialsId: TOMCAT_CREDENTIALS,
-                    ]
-                    
-                    def war = [
-                        warFile: WAR_FILE
-                    ]
-                    
-                    tomcatDeploy server: server, war: war
-                }
-            }
-        }      
+    steps {
+        script {
+            
+            def warFilePath = sh(script: 'find . -name "*.war" | head -n 1', returnStdout: true).trim()
+
+            sh "curl -u ${TOMCAT_CREDENTIALS} --upload-file ${warFilePath} ${TOMCAT_URL}/manager/text/deploy?path=/your-app-path&update=true"
+        }
+    }
+}
+    
     }
 }
