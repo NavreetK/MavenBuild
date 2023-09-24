@@ -82,15 +82,30 @@ pipeline {
                 }
             }
         }
+        stage('Download WAR File') {
+            steps {
+                script {
+                    def nexusUrl = "http://15.222.102.23:8081/repository/maven-repo/com/nexus/MavenBuild/1.0-SNAPSHOT/maven-metadata.xml"
+                    def response = sh(script: "curl -s ${nexusUrl}", returnStdout: true).trim()
+                    def warFileName = sh(script: "echo ${response} | grep -oPm1 '(?<=<latest>)[^<]+'", returnStdout: true).trim()
+                    def warUrl = "http://15.222.102.23:8081/repository/maven-repo/com/nexus/MavenBuild/1.0-SNAPSHOT/${warFileName}"
+                    
+                    sh(script: "curl -o Maven-Nexus-Build.war ${warUrl}")
+                }
+            }
+        }
+        
         stage('Deploy to Tomcat') {
     steps {
         script {
             
-            def warFilePath = sh(script: 'find . -name "*.war" | head -n 1', returnStdout: true).trim()
+           def tomcatHome = "/opt/tomcat/"
+                    def warFilePath = "Maven-Nexus-Build.war"  // Adjust the path if needed
 
-            sh "curl -u ${TOMCAT_CREDENTIALS} --upload-file ${warFilePath} ${TOMCAT_URL}/manager/text/deploy?path=/your-app-path&update=true"
-        // Print out the value of warFilePath
-echo "WAR File Path: ${warFilePath}"
+                    sh(script: "${tomcatHome}/bin/shutdown.sh")
+                    sh(script: "rm -rf ${tomcatHome}/webapps/Maven-Nexus-Build*")
+                    sh(script: "cp ${warFilePath} ${tomcatHome}/webapps/")
+                    sh(script: "${tomcatHome}/bin/startup.sh")
         }
     }
 }
