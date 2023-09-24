@@ -91,8 +91,7 @@ pipeline {
                     ]
                     
                     def war = [
-                        warFile: WAR_FILE,
-                        contextPath: CONTEXT_PATH
+                        warFile: WAR_FILE
                     ]
                     
                     tomcatDeploy server: server, war: war
