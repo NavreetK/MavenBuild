@@ -86,21 +86,19 @@ pipeline {
     steps {
         script {
             def tomcatHome = "/opt/tomcat/"
-            
-            def username = TOMCAT_CREDENTIALS.username
-            def password = TOMCAT_CREDENTIALS.password
-            
-            sh(script: "${tomcatHome}/bin/shutdown.sh")
-            sh(script: "rm -rf ${tomcatHome}/webapps/${CONTEXT_PATH}*")
-            sh(script: "cp ${WAR_FILE} ${tomcatHome}/webapps/${CONTEXT_PATH}.war")
-            sh(script: "${tomcatHome}/bin/startup.sh")
-            
-            // Deploying using Tomcat Manager API (assuming manager-script role is configured in Tomcat)
-            sh(script: "${tomcatHome}/bin/curl -u ${username}:${password} http://http://15.222.102.23:8080/manager/text/undeploy?path=/${CONTEXT_PATH}")
-            sh(script: "${tomcatHome}/bin/curl -u ${username}:${password} http://http://15.222.102.23:8080/manager/text/deploy?path=/${CONTEXT_PATH}&war=file:${tomcatHome}/webapps/${CONTEXT_PATH}.war")
+
+            withCredentials([usernamePassword(credentialsId: 'tomcat', passwordVariable: 'TOMCAT_PASSWORD', usernameVariable: 'TOMCAT_USERNAME')]) {
+                sh(script: "${tomcatHome}/bin/shutdown.sh")
+                sh(script: "rm -rf ${tomcatHome}/webapps/${CONTEXT_PATH}*")
+                sh(script: "cp ${WAR_FILE} ${tomcatHome}/webapps/${CONTEXT_PATH}.war")
+                sh(script: "${tomcatHome}/bin/startup.sh")
+                sh(script: "${tomcatHome}/bin/curl -u ${TOMCAT_USERNAME}:${TOMCAT_PASSWORD} http://15.222.102.23:8080/manager/text/undeploy?path=/${CONTEXT_PATH}")
+                sh(script: "${tomcatHome}/bin/curl -u ${TOMCAT_USERNAME}:${TOMCAT_PASSWORD} http://15.222.102.23:8080/manager/text/deploy?path=/${CONTEXT_PATH}&war=file:${tomcatHome}/webapps/${CONTEXT_PATH}.war")
+            }
         }
     }
 }
+
 
     
     
