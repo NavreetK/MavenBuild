@@ -87,8 +87,8 @@ pipeline {
     steps {
                 sshagent(['TOMCAT_CREDENTIALS']){
                     sh """
-                        scp -o StrictHostKeyChecking=no target/*.war ubuntu@3.99.164.44:/opt/tomcat/webapps
-                        ssh -o StrictHostKeyChecking=no ubuntu@3.99.164.44 /opt/tomcat/bin/startup.sh
+                        scp -o StrictHostKeyChecking=no target/*.war root@3.99.164.44:/opt/tomcat/webapps
+                        ssh -o StrictHostKeyChecking=no root@3.99.164.44 /opt/tomcat/bin/startup.sh
 			    		
 		             """   
                 }
