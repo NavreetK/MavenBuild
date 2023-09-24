@@ -20,8 +20,8 @@ pipeline {
         TOMCAT_URL = 'http://35.182.165.190:8080'
         TOMCAT_HOME = "/opt/tomcat/"
         TOMCAT_CREDENTIALS = credentials('tomcat')
-        WAR_FILE = 'http://15.222.102.23:8081/repository/maven-repo/com/nexus/MavenBuild/1.0-SNAPSHOT/MavenBuild-1.0-20230923.175609-1.war'
-       CONTEXT_PATH = 'maven-repo' 
+       // WAR_FILE = 'http://15.222.102.23:8081/repository/maven-repo/com/nexus/MavenBuild/1.0-SNAPSHOT/MavenBuild-1.0-20230923.175609-1.war'
+      // CONTEXT_PATH = 'maven-repo' 
         // Optional, defaults to the name of the war file
         
     }
@@ -85,15 +85,15 @@ pipeline {
         }
        stage('Deploy to Tomcat') {
     steps {
-        script {
-
-            def warFilePath = sh(script: 'find . -name "*.war" | head -n 1', returnStdout: true).trim()
-
-            sh "curl -u ${TOMCAT_CREDENTIALS} --upload-file ${warFilePath} ${TOMCAT_URL}/manager/text/deploy?path=/your-app-path&update=true"
-            // Print out the value of warFilePath
-echo "WAR File Path: ${warFilePath}"
-        }
-    }
+                sshagent(['TOMCAT_CREDENTIALS']){
+                    sh """
+                        scp -o StrictHostKeyChecking=no target/*.war ubuntu@3.99.164.44:/opt/tomcat/webapps
+                        ssh -o StrictHostKeyChecking=no ubuntu@3.99.164.44 /opt/tomcat/bin/shutdown.sh
+                        ssh -o StrictHostKeyChecking=no ubuntu@3.99.164.44 /opt/tomcat/bin/startup.sh
+			    		
+		             """   
+                }
+                }
 }
     }
 }
