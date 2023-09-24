@@ -16,6 +16,12 @@ pipeline {
         NEXUS_REPOSITORY = "maven-repo"
         // Jenkins credential id to authenticate to Nexus OSS
         NEXUS_CREDENTIAL_ID = "nexus_ID"
+
+        TOMCAT_URL = 'http://35.182.165.190:8080'
+        TOMCAT_CREDENTIALS = credentials('tomcat')
+        WAR_FILE = 'target/*.war'
+       // CONTEXT_PATH = 'your-app-context-path' 
+        // Optional, defaults to the name of the war file
         
     }
 
@@ -76,6 +82,22 @@ pipeline {
                 }
             }
         }
-       
+        stage('Deploy to Tomcat') {
+            steps {
+                script {
+                    def server = [
+                        url: TOMCAT_URL,
+                        credentialsId: TOMCAT_CREDENTIALS,
+                    ]
+                    
+                    def war = [
+                        warFile: WAR_FILE,
+                        contextPath: CONTEXT_PATH
+                    ]
+                    
+                    tomcatDeploy server: server, war: war
+                }
+            }
+        }      
     }
 }
