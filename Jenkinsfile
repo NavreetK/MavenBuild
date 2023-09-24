@@ -89,6 +89,8 @@ pipeline {
             def warFilePath = sh(script: 'find . -name "*.war" | head -n 1', returnStdout: true).trim()
 
             sh "curl -u ${TOMCAT_CREDENTIALS} --upload-file ${warFilePath} ${TOMCAT_URL}/manager/text/deploy?path=/your-app-path&update=true"
+        // Print out the value of warFilePath
+echo "WAR File Path: ${warFilePath}"
         }
     }
 }
