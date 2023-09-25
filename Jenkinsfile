@@ -86,7 +86,7 @@ pipeline {
         stage('Deploy to Tomcat'){
             steps {
 
-                sshagent(['tomcat-creds']){
+                sshagent(['tomcat_PEM']){
                     sh """
                         scp -o StrictHostKeyChecking=no target/*.war ubuntu@3.98.131.194:/opt/tomcat/webapps
                         ssh -o StrictHostKeyChecking=no ubuntu@3.98.131.194 /opt/tomcat/bin/shutdown.sh
