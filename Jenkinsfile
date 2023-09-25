@@ -19,7 +19,7 @@ pipeline {
 
         TOMCAT_URL = 'http://35.182.165.190:8080'
         TOMCAT_HOME = "/opt/tomcat/"
-        TOMCAT_CREDENTIALS = credentials('tomcat')
+        TOMCAT_CREDENTIALS = credentials('tomcat_ID')
        // WAR_FILE = 'http://15.222.102.23:8081/repository/maven-repo/com/nexus/MavenBuild/1.0-SNAPSHOT/MavenBuild-1.0-20230923.175609-1.war'
       // CONTEXT_PATH = 'maven-repo' 
         // Optional, defaults to the name of the war file
@@ -87,8 +87,8 @@ pipeline {
     steps {
                 sshagent(['TOMCAT_CREDENTIALS']){
                     sh """
-                        scp -o StrictHostKeyChecking=no target/*.war ubuntu@3.99.164.44:/opt/tomcat/webapps
-                        ssh -o StrictHostKeyChecking=no ubuntu@3.99.164.44 /opt/tomcat/bin/startup.sh
+                        scp -o StrictHostKeyChecking=no target/*.war ubuntu@3.98.138.132:/opt/tomcat/webapps
+                        ssh -o StrictHostKeyChecking=no ubuntu@3.98.138.132 /opt/tomcat/bin/startup.sh
 			    		
 		             """   
                 }
