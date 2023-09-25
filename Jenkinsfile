@@ -85,6 +85,16 @@ pipeline {
 
         stage('Deploy to Tomcat'){
             steps {
+
+                sshagent(['tomcat-creds']){
+                    sh """
+                        scp -o StrictHostKeyChecking=no target/*.war ubuntu@3.98.131.194:/opt/tomcat/webapps
+                        ssh -o StrictHostKeyChecking=no ubuntu@3.98.131.194 /opt/tomcat/bin/shutdown.sh
+                        ssh -o StrictHostKeyChecking=no ubuntu@3.98.131.194 /opt/tomcat/bin/startup.sh
+			    		
+		             """   
+                }
+                /*
                 script {
                     def response = sh(script: "curl -u ${TOMCAT_USERNAME}:${TOMCAT_PASSWORD} ${TOMCAT_URL}/list", returnStdout: true).trim()
                     if (response.contains(CONTEXT_PATH)) {
@@ -95,6 +105,7 @@ pipeline {
                     echo "Deploying application..."
                     sh "curl -u ${TOMCAT_USERNAME}:${TOMCAT_PASSWORD} ${TOMCAT_URL}/deploy?path=${CONTEXT_PATH}&war=file:${WAR_FILE_PATH}"
                 }
+                */
             }
         }
        
