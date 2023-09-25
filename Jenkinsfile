@@ -17,12 +17,11 @@ pipeline {
         // Jenkins credential id to authenticate to Nexus OSS
         NEXUS_CREDENTIAL_ID = "nexus_ID"
 
-        //TOMCAT_URL = 'http://35.182.165.190:8080'
-        //TOMCAT_HOME = "/opt/tomcat/"
-        TOMCAT_CREDENTIALS = credentials('tomcat_creds')
-       // WAR_FILE = 'http://15.222.102.23:8081/repository/maven-repo/com/nexus/MavenBuild/1.0-SNAPSHOT/MavenBuild-1.0-20230923.175609-1.war'
-      // CONTEXT_PATH = 'maven-repo' 
-        // Optional, defaults to the name of the war file
+       	    TOMCAT_URL = 'http://3.98.131.194:8080/manager'
+        TOMCAT_USERNAME = 'admin'
+        TOMCAT_PASSWORD = 'admin123'
+        WAR_FILE_PATH = 'target/*.war'
+        CONTEXT_PATH = '/myapp'
         
     }
 
@@ -86,13 +85,15 @@ pipeline {
 
         stage('Deploy to Tomcat'){
             steps {
-                sshagent(['TOMCAT_CREDENTIALS']){
-                    sh """
+                script {
+                    def response = sh(script: "curl -u ${TOMCAT_USERNAME}:${TOMCAT_PASSWORD} ${TOMCAT_URL}/list", returnStdout: true).trim()
+                    if (response.contains(CONTEXT_PATH)) {
+                        echo "Undeploying existing application..."
+                        sh "curl -u ${TOMCAT_USERNAME}:${TOMCAT_PASSWORD} ${TOMCAT_URL}/undeploy?path=${CONTEXT_PATH}"
+                    }
                     
-                        ssh -o StrictHostKeyChecking=no ubuntu@3.98.131.194 /opt/tomcat/bin/startup.sh
-                        scp -o StrictHostKeyChecking=no target/*.war ubuntu@3.98.131.194:/opt/tomcat/webapps
-			    		
-		             """   
+                    echo "Deploying application..."
+                    sh "curl -u ${TOMCAT_USERNAME}:${TOMCAT_PASSWORD} ${TOMCAT_URL}/deploy?path=${CONTEXT_PATH}&war=file:${WAR_FILE_PATH}"
                 }
             }
         }
