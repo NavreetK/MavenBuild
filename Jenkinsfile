@@ -17,7 +17,7 @@ pipeline {
         // Jenkins credential id to authenticate to Nexus OSS
         NEXUS_CREDENTIAL_ID = "nexus_ID"
 
-       	    TOMCAT_URL = 'http://3.98.131.194:8080/manager'
+       	    TOMCAT_URL = 'http://3.98.131.194:8080/manager/text'
         TOMCAT_USERNAME = 'admin'
         TOMCAT_PASSWORD = 'admin123'
         WAR_FILE_PATH = 'target/*.war'
