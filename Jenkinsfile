@@ -89,7 +89,6 @@ pipeline {
                 sshagent(['tomcat_PEM']){
                     sh """
                         scp -o StrictHostKeyChecking=no target/*.war ubuntu@3.99.128.51:/opt/tomcat/webapps
-                        ssh -o StrictHostKeyChecking=no ubuntu@3.99.128.51 /opt/tomcat/bin/shutdown.sh
                         ssh -o StrictHostKeyChecking=no ubuntu@3.99.128.51 /opt/tomcat/bin/startup.sh
 			    		
 		             """   
