@@ -163,6 +163,6 @@
         </plugin>
       </plugins>
     </pluginManagement>
-		<finalName>Maven-Nexus Build</finalName>
+		<finalName>MavenBuild</finalName>
 	</build>
 </project>
