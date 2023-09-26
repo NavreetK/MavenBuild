@@ -52,7 +52,7 @@ pipeline {
             nexusVersion: 'nexus3', 
             protocol: 'http', 
             repository: 'MavenBuild', 
-            version: '1.0-SNAPSHOT'
+            version: '1.0'
             }
         }
 
