@@ -3,4 +3,7 @@
 
 <web-app>
   <display-name>Finally my webpage is working</display-name>
+ <welcome-file-list>
+        <welcome-file>index.jsp</welcome-file>
+    </welcome-file-list>
 </web-app>
