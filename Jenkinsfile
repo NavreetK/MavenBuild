@@ -1,54 +1,32 @@
-pipeline {
+pipeline{
     agent any
-    tools {
-        maven "Maven"
-        jdk "Java9"
+    tools{
+        maven 'Maven'
+	    jdk "Java9"
     }
-
-    environment {
-        // This can be nexus3 or nexus2
-        NEXUS_VERSION = "nexus3"
-        // This can be http or https
-        NEXUS_PROTOCOL = "http"
-        // Where your Nexus is running
-        NEXUS_URL = "15.222.102.23:8081"
-        // Repository where we will upload the artifact
-        NEXUS_REPOSITORY = "maven-repo"
-        // Jenkins credential id to authenticate to Nexus OSS
-        NEXUS_CREDENTIAL_ID = "nexus_ID"
-        
-    }
-
-    stages {
-        stage("Check out") {
-            steps {
-                script {
-                     git credentialsId: 'github', branch: 'nexus', url: 'https://github.com/NavreetK/MavenBuild'
-                }
+    stages{
+        stage('Git Checkout'){
+            steps{
+                git credentialsId: 'github', branch: 'nexus', url: 'https://github.com/NavreetK/MavenBuild'
             }
         }
-
-        stage("mvn build") {
-            steps {
-                script {
-			sh "mvn clean install"
-                    sh "mvn clean package"
-                }
+        stage('Maven build'){
+            steps{
+                sh 'mvn clean package'
             }
         }
-
-        stage("publish to nexus") {
+        stage('Publish to Nexus'){
             steps{
              nexusArtifactUploader artifacts: [
                  [
                      artifactId: 'MavenBuild', 
                      classifier: '', 
-                     file: 'target/MavenBuild-1.0-SNAPSHOT.war', 
+                     file: 'target/*.war', 
                      type: 'war'
                 ]
             ], 
             credentialsId: 'nexus_ID', 
-            groupId: 'com.nexus', 
+            groupId: 'in.javahome', 
             nexusUrl: '15.222.102.23:8081', 
             nexusVersion: 'nexus3', 
             protocol: 'http', 
@@ -56,10 +34,8 @@ pipeline {
             version: '1.0'
             }
         }
-
-        stage('Deploy to Tomcat'){
+        stage('Deploy Tomcat'){
             steps {
-
                 sshagent(['tomcat_PEM']){
                     sh """
                         scp -o StrictHostKeyChecking=no target/*.war ubuntu@3.99.128.51:/opt/tomcat/webapps
@@ -67,20 +43,7 @@ pipeline {
 			    		
 		             """   
                 }
-                /*
-                script {
-                    def response = sh(script: "curl -u ${TOMCAT_USERNAME}:${TOMCAT_PASSWORD} ${TOMCAT_URL}/list", returnStdout: true).trim()
-                    if (response.contains(CONTEXT_PATH)) {
-                        echo "Undeploying existing application..."
-                        sh "curl -u ${TOMCAT_USERNAME}:${TOMCAT_PASSWORD} ${TOMCAT_URL}/undeploy?path=${CONTEXT_PATH}"
-                    }
-                    
-                    echo "Deploying application..."
-                    sh "curl -u ${TOMCAT_USERNAME}:${TOMCAT_PASSWORD} ${TOMCAT_URL}/deploy?path=${CONTEXT_PATH}&war=file:${WAR_FILE_PATH}"
-                }
-                */
             }
         }
-       
     }
 }
