@@ -21,7 +21,7 @@ pipeline{
                  [
                      artifactId: 'MavenBuild', 
                      classifier: '', 
-                     file: 'target/*.war', 
+                     file: 'target/MavenBuild-0.1.war', 
                      type: 'war'
                 ]
             ], 
